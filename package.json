@@ -1,0 +1,13 @@
+{
+  "name": "nacl-skill",
+  "version": "0.1.0",
+  "description": "NaCl personal skills and engineering workflow plugin for coding agents",
+  "type": "module",
+  "keywords": [
+    "skills",
+    "code-generation",
+    "mybatis-plus",
+    "ruoyi",
+    "workflow"
+  ]
+}

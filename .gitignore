@@ -1,0 +1,9 @@
+.idea
+.vscode
+target
+logs
+src/test/
+**/src/test/
+
+codeup-project-analysis.json
+/skills/project-analysis-report.md

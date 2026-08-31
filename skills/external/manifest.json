@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "description": "External skills manifest - bundled from third-party sources for standalone management",
+  "updatedAt": "2025-07-11",
+  "sources": {
+    "superpowers": {
+      "name": "Superpowers",
+      "repo": "https://github.com/obra/superpowers",
+      "branch": "main",
+      "license": "MIT",
+      "bundledAt": "2025-07-11",
+      "skills": [
+        { "id": "using-superpowers", "path": "superpowers/using-superpowers", "name": "using-superpowers", "description": "Master skill routing to all other superpowers skills" },
+        { "id": "brainstorming", "path": "superpowers/brainstorming", "name": "brainstorming", "description": "Structured brainstorming before implementation" },
+        { "id": "writing-plans", "path": "superpowers/writing-plans", "name": "writing-plans", "description": "Write implementation plans before coding" },
+        { "id": "systematic-debugging", "path": "superpowers/systematic-debugging", "name": "systematic-debugging", "description": "Structured debugging methodology" },
+        { "id": "test-driven-development", "path": "superpowers/test-driven-development", "name": "test-driven-development", "description": "TDD workflow for reliable code" },
+        { "id": "verification-before-completion", "path": "superpowers/verification-before-completion", "name": "verification-before-completion", "description": "Verify work before declaring done" },
+        { "id": "dispatching-parallel-agents", "path": "superpowers/dispatching-parallel-agents", "name": "dispatching-parallel-agents", "description": "Parallel agent orchestration patterns" },
+        { "id": "executing-plans", "path": "superpowers/executing-plans", "name": "executing-plans", "description": "Execute pre-written plans safely" },
+        { "id": "subagent-driven-development", "path": "superpowers/subagent-driven-development", "name": "subagent-driven-development", "description": "Delegate work to subagents effectively" },
+        { "id": "finishing-a-development-branch", "path": "superpowers/finishing-a-development-branch", "name": "finishing-a-development-branch", "description": "Finish and merge feature branches" },
+        { "id": "receiving-code-review", "path": "superpowers/receiving-code-review", "name": "receiving-code-review", "description": "Receive and process code review feedback" },
+        { "id": "requesting-code-review", "path": "superpowers/requesting-code-review", "name": "requesting-code-review", "description": "Request and conduct code reviews" },
+        { "id": "using-git-worktrees", "path": "superpowers/using-git-worktrees", "name": "using-git-worktrees", "description": "Git worktree workflows" },
+        { "id": "writing-skills", "path": "superpowers/writing-skills", "name": "writing-skills", "description": "How to write and structure new skills" }
+      ]
+    },
+    "agent-skills": {
+      "name": "Agent Skills for Context Engineering",
+      "repo": "https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering",
+      "branch": "main",
+      "license": "MIT",
+      "bundledAt": "2025-07-11",
+      "skills": [
+        { "id": "context-fundamentals", "path": "agent-skills/context-fundamentals", "name": "context-fundamentals", "description": "Understanding context in agent systems" },
+        { "id": "context-degradation", "path": "agent-skills/context-degradation", "name": "context-degradation", "description": "Recognizing and mitigating context degradation" },
+        { "id": "context-compression", "path": "agent-skills/context-compression", "name": "context-compression", "description": "Compression strategies for long sessions" },
+        { "id": "context-optimization", "path": "agent-skills/context-optimization", "name": "context-optimization", "description": "Context optimization techniques" },
+        { "id": "multi-agent-patterns", "path": "agent-skills/multi-agent-patterns", "name": "multi-agent-patterns", "description": "Multi-agent coordination architectures" },
+        { "id": "memory-systems", "path": "agent-skills/memory-systems", "name": "memory-systems", "description": "Memory architecture design" },
+        { "id": "tool-design", "path": "agent-skills/tool-design", "name": "tool-design", "description": "Principles for designing agent tools" },
+        { "id": "filesystem-context", "path": "agent-skills/filesystem-context", "name": "filesystem-context", "description": "Using filesystem as context layer" },
+        { "id": "hosted-agents", "path": "agent-skills/hosted-agents", "name": "hosted-agents", "description": "Hosted agent infrastructure" },
+        { "id": "long-horizon-prompting", "path": "agent-skills/long-horizon-prompting", "name": "long-horizon-prompting", "description": "Prompting for long-horizon tasks" },
+        { "id": "latent-briefing", "path": "agent-skills/latent-briefing", "name": "latent-briefing", "description": "Latent briefing and KV memory sharing" },
+        { "id": "evaluation", "path": "agent-skills/evaluation", "name": "evaluation", "description": "Agent evaluation frameworks" },
+        { "id": "advanced-evaluation", "path": "agent-skills/advanced-evaluation", "name": "advanced-evaluation", "description": "Advanced evaluation techniques" },
+        { "id": "harness-engineering", "path": "agent-skills/harness-engineering", "name": "harness-engineering", "description": "Harness engineering for reliable agents" },
+        { "id": "self-improvement-loops", "path": "agent-skills/self-improvement-loops", "name": "self-improvement-loops", "description": "Self-improvement loop patterns" },
+        { "id": "project-development", "path": "agent-skills/project-development", "name": "project-development", "description": "Project development with LLM agents" },
+        { "id": "bdi-mental-states", "path": "agent-skills/bdi-mental-states", "name": "bdi-mental-states", "description": "BDI mental states for agents" }
+      ]
+    },
+    "superclaude": {
+      "name": "SuperClaude Framework",
+      "repo": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
+      "branch": "master",
+      "license": "MIT",
+      "bundledAt": "2025-07-11",
+      "skills": [
+        { "id": "confidence-check", "path": "superclaude/confidence-check", "name": "confidence-check", "description": "Pre-implementation confidence assessment (>=90% required)" },
+        { "id": "brainstorm", "path": "superclaude/brainstorm", "name": "brainstorm", "description": "Brainstorming methodology" },
+        { "id": "deep-research", "path": "superclaude/deep-research", "name": "deep-research", "description": "Deep research workflows" },
+        { "id": "pm", "path": "superclaude/pm", "name": "pm", "description": "Project management skill" },
+        { "id": "token-efficiency", "path": "superclaude/token-efficiency", "name": "token-efficiency", "description": "Token efficiency optimization" },
+        { "id": "troubleshoot", "path": "superclaude/troubleshoot", "name": "troubleshoot", "description": "Troubleshooting methodology" }
+      ]
+    }
+  }
+}

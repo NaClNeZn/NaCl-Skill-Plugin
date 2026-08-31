@@ -1,0 +1,39 @@
+{
+  "name": "nacl-skill",
+  "version": "0.1.0",
+  "description": "NaCl personal skills plugin - code generation and engineering workflows",
+  "author": {
+    "name": "NaCl",
+    "email": ""
+  },
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "code-generation",
+    "mybatis-plus",
+    "ruoyi",
+    "ddl-to-service",
+    "mapstruct",
+    "converter",
+    "fullstack",
+    "vue-admin",
+    "superpowers",
+    "context-engineering",
+    "superclaude"
+  ],
+  "skills": "./skills/",
+  "sessionStart": {
+    "skill": "using-naclskill"
+  },
+  "skillInstructions": "NaCl-skill plugin for Kimi Code:\n\n=== NATIVE SKILLS ===\n\n- ddl-to-service: Generate MyBatis-Plus Mapper/Service/Controller from DDL or Domain class with Ruoyi conventions.\n- mapstruct-converter-gen: Generate MapStruct Converter + DTO + VO from an Entity class. Supports both factory (Mappers.getMapper) and Spring DI (componentModel) styles.\n- java-crud-stack-gen: Generate complete Java CRUD stack (Entity+Mapper+DTO+VO+Converter+Service+Domain+Controller) from DDL or Entity, with Domain aggregation layer and BaseController.\n\n=== EXTERNAL SKILLS (bundled) ===\n\n--- Superpowers (skills/external/superpowers/) ---\n- using-superpowers: Master skill - establishes skill routing framework. Invoke FIRST when task starts.\n- brainstorming: Structured brainstorming before any implementation.\n- writing-plans: Write implementation plans (EnterPlanMode) before coding.\n- systematic-debugging: Step-by-step debugging methodology for bugs.\n- test-driven-development: TDD workflow - write tests before implementation.\n- verification-before-completion: Verify work thoroughly before declaring done.\n- dispatching-parallel-agents: Orchestrate parallel sub-agents efficiently.\n- executing-plans: Execute pre-written plans safely with checkpoints.\n- subagent-driven-development: Delegate work to subagents with clear contracts.\n- finishing-a-development-branch: Complete feature branches with PR readiness.\n- receiving-code-review: Process and respond to code review feedback.\n- requesting-code-review: Conduct structured code reviews.\n- using-git-worktrees: Use git worktrees for parallel development.\n- writing-skills: Learn how to write new skill files.\n\n--- Agent Skills for Context Engineering (skills/external/agent-skills/) ---\n- context-fundamentals: Understand context mechanics in LLM agents.\n- context-degradation: Detect and prevent context degradation (lost-in-middle, U-shaped attention).\n- context-compression: Compression strategies for long session survival.\n- context-optimization: Techniques to maximize signal-to-noise ratio.\n- multi-agent-patterns: Architectures: supervisor, swarm, hierarchical.\n- memory-systems: Memory design from scratchpad to temporal knowledge graphs.\n- tool-design: Design agent tools that are robust and discoverable.\n- filesystem-context: Use filesystem as external context layer.\n- hosted-agents: Remote sandbox agent infrastructure patterns.\n- long-horizon-prompting: Launch prompt design for autonomous agents.\n- latent-briefing: KV memory sharing between orchestrator and workers.\n- evaluation: Build deterministic evaluation frameworks.\n- advanced-evaluation: Model judges, pairwise comparison, bias mitigation.\n- harness-engineering: Operating loops around agents for reliability.\n- self-improvement-loops: Meta-harness and recursive self-improvement.\n- project-development: LLM-assisted project development lifecycle.\n- bdi-mental-states: Belief-Desire-Intention agent modeling.\n\n--- SuperClaude Framework (skills/external/superclaude/) ---\n- confidence-check: Pre-implementation confidence assessment (>=90% required).\n- brainstorm: Structured brainstorming.\n- deep-research: Deep research and investigation workflows.\n- pm: Project management methodology.\n- token-efficiency: Reduce token waste and improve cost.\n- troubleshoot: Systematic troubleshooting.\n\n=== INTEGRATION RULES ===\n\n1. Process skills come first — set approach, then implement.\n   Example: \"Build X\" → brainstorming → writing-plans → [implementation skill]\n   Example: \"Fix bug\" → systematic-debugging → [domain skill]\n\n2. confidence-check (SuperClaude): Use BEFORE any implementation to verify >=90% readiness.\n\n3. context-* skills: Use when managing long context, multi-agent systems, or optimizing agent behavior.\n\n4. Superpowers skills: Use for daily engineering workflow — planning, coding, debugging, reviewing.",
+  "interface": {
+    "displayName": "NaCl Skills",
+    "shortDescription": "NaCl personal code generation and engineering workflow skills",
+    "longDescription": "Personal skills plugin for NaCl: DDL-to-service code generation, Ruoyi framework patterns, Superpowers workflow, context engineering, and SuperClaude methodologies.",
+    "developerName": "NaCl",
+    "capabilities": [
+      "Read",
+      "Write"
+    ]
+  }
+}
