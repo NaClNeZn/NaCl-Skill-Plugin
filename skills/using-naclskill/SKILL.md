@@ -23,6 +23,8 @@ This is not negotiable. You cannot rationalize your way out of this.
 
 ### Native Skills (nacl-skill)
 - **ddl-to-service**: Generate MyBatis-Plus Mapper/Service/Controller from DDL or Domain class, with Ruoyi conventions.
+- **mapstruct-converter-gen**: Generate MapStruct Converter + DTO + VO from an Entity class. Supports both factory (Mappers.getMapper) and Spring DI (componentModel) styles.
+- **java-crud-stack-gen**: Generate complete Java CRUD stack (Entity+Mapper+DTO+VO+Converter+Service+Domain+Controller) from DDL or Entity, with Domain aggregation layer and BaseController.
 
 ### Superpowers (skills/external/superpowers/)
 - **using-superpowers**: Master skill routing to all other superpowers skills
@@ -70,6 +72,8 @@ This is not negotiable. You cannot rationalize your way out of this.
 Process skills come first — they set the approach, then implementation skills carry it out.
 
 - "Generate service from DDL" → nacl-skill:ddl-to-service
+- "Generate converter/DTO/VO from Entity" → nacl-skill:mapstruct-converter-gen
+- "Generate full CRUD stack" → nacl-skill:java-crud-stack-gen
 - "Let's build X" → superpowers:brainstorming → superpowers:writing-plans → [implementation skill]
 - "Fix this bug" → superpowers:systematic-debugging → [domain skill]
 - "Starting implementation" → superclaude:confidence-check → [implementation]
