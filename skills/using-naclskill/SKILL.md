@@ -22,9 +22,9 @@ This is not negotiable. You cannot rationalize your way out of this.
 ## Available Skills
 
 ### Native Skills (nacl-skill)
-- **ddl-to-service**: Generate MyBatis-Plus Mapper/Service/Controller from DDL or Domain class, with Ruoyi conventions.
+- **ddl-to-service**: Generate MyBatis-Plus Mapper/Service/ServiceImpl/Controller/QueryBO from DDL or a Java Bean (Domain/Entity class), with Ruoyi conventions. Queries use `baseQueryMethod` (QueryBO + LambdaQueryWrapper conditional chaining).
 - **mapstruct-converter-gen**: Generate MapStruct Converter + DTO + VO from an Entity class. Supports both factory (Mappers.getMapper) and Spring DI (componentModel) styles.
-- **java-crud-stack-gen**: Generate complete Java CRUD stack (Entity+Mapper+DTO+VO+Converter+Service+Domain+Controller) from DDL or Entity, with Domain aggregation layer and BaseController.
+- **java-crud-stack-gen**: Generate complete Java CRUD stack (Entity+Mapper+DTO+QueryBO+VO+Converter+Service+Domain+Controller) from DDL or Entity, with Domain aggregation layer and BaseController. Queries use the baseQueryMethod convention from ddl-to-service (QueryBO + LambdaQueryWrapper conditional chaining).
 
 ### Superpowers (skills/external/superpowers/)
 - **using-superpowers**: Master skill routing to all other superpowers skills

@@ -1,11 +1,13 @@
 ---
 name: ddl-to-service
-description: "Generate MyBatis-Plus Mapper/Service/ServiceImpl/Controller/QueryBO from DDL or Domain class, following project-specific conventions. Triggered when user wants to scaffold service-layer code from database definitions or domain objects."
+description: "Generate MyBatis-Plus Mapper/Service/ServiceImpl/Controller/QueryBO from DDL or a Java Bean (Domain/Entity class), following project-specific conventions. Triggered when user wants to scaffold service-layer code from database definitions or entity/domain objects."
 ---
 
 # DDL to Service Generator
 
 Generate complete MyBatis-Plus service layer code from DDL statements or Domain classes.
+
+> **术语说明**: 本技能中的 "Domain class" 指 **Java Bean**（持久化实体 / POJO，即 Entity/DO/PO 类），不是业务聚合根。若用户提供的类位于 `domain.*` / `pojo.*` / `po.*` 等实体包，即视为 Java Bean。
 
 ## Trigger
 

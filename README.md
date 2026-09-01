@@ -6,9 +6,9 @@ Personal skills plugin for NaCl's engineering workflows with Kimi Code.
 
 ### Native Skills
 
-- **`ddl-to-service`**: Generate MyBatis-Plus Mapper / Service / ServiceImpl / Controller / QueryBO from DDL or Domain class, with Ruoyi framework conventions.
+- **`ddl-to-service`**: Generate MyBatis-Plus Mapper / Service / ServiceImpl / Controller / QueryBO from DDL or a Java Bean (Domain/Entity class), with Ruoyi framework conventions. Queries use `baseQueryMethod` (QueryBO + LambdaQueryWrapper conditional chaining).
 - **`mapstruct-converter-gen`**: Generate MapStruct Converter + DTO + VO from an Entity class. Supports both factory (`Mappers.getMapper`) and Spring DI (`componentModel`) styles.
-- **`java-crud-stack-gen`**: Generate complete Java CRUD stack (Entity + Mapper + DTO + SelectDTO + VO + Converter + Service + Domain + Controller) from DDL or Entity, with Ruoyi + MyBatis-Plus conventions, Domain aggregation layer, multi-tenant filtering, and logical delete support.
+- **`java-crud-stack-gen`**: Generate complete Java CRUD stack (Entity + Mapper + DTO + QueryBO + VO + Converter + Service + Domain + Controller) from DDL or Entity, with Ruoyi + MyBatis-Plus conventions, Domain aggregation layer, multi-tenant filtering, and logical delete support. Query paths use the `baseQueryMethod` convention from ddl-to-service (QueryBO + LambdaQueryWrapper conditional chaining).
 
 ### Bundled External Skills
 

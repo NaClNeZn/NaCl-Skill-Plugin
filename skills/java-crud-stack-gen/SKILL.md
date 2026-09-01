@@ -1,6 +1,6 @@
 ---
 name: java-crud-stack-gen
-description: "Generate complete Java CRUD stack (Entity + Mapper + DTO + VO + Converter + Service + Domain + Controller) from DDL or Entity, following Ruoyi + MyBatis-Plus conventions with Domain aggregation layer. Triggered when user wants full backend scaffold from database definition."
+description: "Generate complete Java CRUD stack (Entity + Mapper + DTO + QueryBO + VO + Converter + Service + Domain + Controller) from DDL or Entity, following Ruoyi + MyBatis-Plus conventions with Domain aggregation layer. Query methods unify the baseQueryMethod convention from ddl-to-service (QueryBO + LambdaQueryWrapper conditional chaining). Triggered when user wants full backend scaffold from database definition."
 ---
 
 # Java CRUD Stack Generator
@@ -16,20 +16,21 @@ Invoke this skill when the user:
 
 ## Generated Files
 
-**Total: 7 files**
+**Total: 8 files**
 
 | # | File | Path Pattern |
 |---|------|-------------|
 | 1 | Entity (PO) | `{module}/po/{Prefix}.java` |
 | 2 | Mapper | `{module}/mapper/{Prefix}Mapper.java` |
-| 3 | DTO | `{module}/dto/{Prefix}SaveDTO.java` |
-| 4 | VO | `{module}/vo/{Prefix}VO.java` |
-| 5 | Converter | `{module}/convert/{Prefix}Convert.java` |
-| 6 | Service | `{module}/service/{Prefix}Service.java` |
-| 7 | Domain | `{module}/service/domain/Sys{Prefix}Domain.java` |
+| 3 | DTO | `{module}/dto/{Prefix}{DtoSuffix}.java`（`SaveDTO` 或 `DTO`，按项目习惯） |
+| 4 | QueryBO | `{boPackage}/{Prefix}QueryBO.java` (默认 `{module}/bo/`，动态匹配) |
+| 5 | VO | `{module}/vo/{Prefix}VO.java` |
+| 6 | Converter | `{module}/convert/{Prefix}Convert.java` 或 `{module}/converter/{Prefix}Converter.java`（按 A/B 风格） |
+| 7 | Service | `{module}/service/{Prefix}Service.java` |
+| 8 | Domain | `{module}/service/domain/Sys{Prefix}Domain.java` |
 
 **Controller** — generated but delegates to Domain:
-| 8 | Controller | `{module}/controller/{Prefix}Controller.java` |
+| 9 | Controller | `{module}/controller/{Prefix}Controller.java` |
 
 ## Project Style Detection
 
@@ -43,9 +44,13 @@ Invoke this skill when the user:
 6. **Check Service annotation** — `@Service("beanName")` or plain `@Service`?
 7. **Check injection** — `@Resource` or `@RequiredArgsConstructor` + `final`?
 8. **Check query wrapper** — `QueryWrapper` (string col names) or `LambdaQueryWrapper` (lambda)?
-9. **Check Converter** — `@Mapper` factory or `componentModel = "spring"`?
-10. **Check fixed conditions** — `hospitalId` / `tenantId` / `status` filter?
-11. **Check common library package path** — used as `{commonPackage}` in common-module imports (`AjaxResult` / `TableDataInfo` / `BaseController` / `StatusEnum` / `Common`)
+9. **Check Service interface** — 项目是否使用 `I{Prefix}Service` 接口 + `{Prefix}ServiceImpl` 实现类（若用，Service 按接口+实现生成）
+10. **Check Converter** — `@Mapper` factory or `componentModel = "spring"`?
+11. **Check fixed conditions** — `hospitalId` / `tenantId` / `status` filter?
+12. **Check common library package path** — used as `{commonPackage}` in common-module imports (`AjaxResult` / `TableDataInfo` / `BaseController` / `StatusEnum` / `Common`)
+13. **Check QueryBO package** — 现有 BO/QueryBO 所在包：`{basePackage}.{module}.bo`（`{module}/bo/`）还是 `domain.{module}.bo` / `pojo.bo` / `pojo.bo.{submodule}`？`{boPackage}` 跟随检测到的项目实际位置
+14. **Check DTO naming** — 项目现有 DTO 命名是 `XxxSaveDTO` 还是 `XxxDTO`？`{DtoSuffix}` 跟随检测结果（默认 `SaveDTO`）
+15. **Check author / date** — 项目 javadoc 使用的 `@author` 名字与 `@date` 日期格式（如 `yyyy-MM-dd`），`{author}` / `{date}` 跟随检测
 
 ### If Project Cannot Be Detected
 
@@ -54,9 +59,11 @@ Use default Ruoyi style:
 - Mapper: extends `EasyBaseMapper<Entity>`
 - Service: `@Service("beanName")` + extends `ServiceImpl<Mapper, Entity>`
 - Controller: extends `BaseController`, `@Resource` injection
-- Query: `QueryWrapper` with UPPER_SNAKE column names
+- Query: `LambdaQueryWrapper` conditional chaining via `baseQueryMethod({Prefix}QueryBO)` (baseQueryMethod convention)
+- QueryBO 包路径: `{boPackage}` = `{basePackage}.{module}.bo`（`{module}/bo/`）— 项目无法检测时的默认值；有检测依据时跟随项目实际位置
 - Converter: `@Mapper` factory style (Mappers.getMapper)
-- Fixed: `Common.getHospitalId()` + `StatusEnum.IN_USE`
+- Fixed: optional comment templates (e.g. `Common.getHospitalId()` + `StatusEnum.IN_USE`), enabled only per user confirmation
+- Javadoc: `@author {author}` + `@date {date}`（默认 `{author}=ruoyi`，`{date}` 格式 `yyyy-MM-dd`）
 
 Always present detected style to user for confirmation.
 
@@ -68,7 +75,7 @@ Parse DDL to extract columns, types, comments. Generate Entity draft → confirm
 
 ### Mode B: Entity provided
 
-Use Entity as-is. Generate DTO/VO/Converter/Service/Domain/Controller around it.
+Use Entity as-is. Generate DTO/QueryBO/VO/Converter/Service/Domain/Controller around it.
 
 ## File Generation Rules
 
@@ -94,6 +101,7 @@ import java.time.LocalDateTime;
  * {tableComment}
  *
  * @author {author}
+ * @date {date}
  */
 @Slf4j
 @Data
@@ -142,29 +150,22 @@ package {basePackage}.{module}.mapper;
 
 import {commonPackage}.datasource.config.mp.EasyBaseMapper;
 import {basePackage}.{module}.po.{Prefix};
-import {basePackage}.{module}.vo.{Prefix}VO;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * {tableComment} Mapper
  *
  * @author {author}
+ * @date {date}
  */
 public interface {Prefix}Mapper extends EasyBaseMapper<{Prefix}> {
-
-    /**
-     * 查询 {prefix} 列表
-     */
-    List<{Prefix}VO> get{Prefix}List(@Param("{prefix}") {Prefix} {prefix},
-                                      @Param("hospitalId") String hospitalId);
 }
 ```
 
 ### 3. DTO
 
-**Path**: `{module}/dto/{Prefix}SaveDTO.java`
+**Path**: `{module}/dto/{Prefix}{DtoSuffix}.java`
+
+**DTO 命名（按项目习惯）**: `{DtoSuffix}` 为 `SaveDTO`（默认）或 `DTO`，与 mapstruct-converter-gen 的 DTO 命名约定一致。检测项目现有 DTO 命名（`XxxSaveDTO` / `XxxDTO`），跟随检测结果并向用户确认。
 
 ```java
 package {basePackage}.{module}.dto;
@@ -178,9 +179,10 @@ import java.io.Serializable;
  * {tableComment} 前端数据传输对象
  *
  * @author {author}
+ * @date {date}
  */
 @Data
-public class {Prefix}SaveDTO implements Serializable {
+public class {Prefix}{DtoSuffix} implements Serializable {
     private Long {pkName};
     @NotBlank(message = "{fieldName}不能为空")
     private String {fieldName};
@@ -193,7 +195,50 @@ public class {Prefix}SaveDTO implements Serializable {
 }
 ```
 
-### 4. VO
+### 4. QueryBO
+
+**Path**: `{boPackage}/{Prefix}QueryBO.java` — 默认 `{basePackage}.{module}.bo`（即 `{module}/bo/`），但**非固定**：需结合项目现有 BO 结构与查询场景动态匹配包路径，检测后向用户确认。
+
+**查询对象统一遵循 ddl-to-service 的 `baseQueryMethod` 约定**（见 `ddl-to-service` 技能）：独立 QueryBO 承载查询条件，替代直接传 PO 查询。
+
+**Rules:**
+- **QueryBO 包路径动态匹配**（非强制，结合项目与问题）：默认 `{basePackage}.{module}.bo`（`{module}/bo/`）；先检查项目现有 BO/QueryBO 所在包（`domain.{module}.bo` / `pojo.bo` / `pojo.bo.{submodule}` 等），匹配已存在的位置，并将检测结果向用户确认后再生成
+- Only include queryable fields — skip large text / blob columns
+- Skip audit fields (`createTime`, `updateTime`, `createBy`, `updateBy`, `deleted`) unless user says otherwise; `{pkName}` IS included (business key for exact match)
+- All fields are `String` type by default for varchar columns; numeric/date fields keep their types for range conditions
+- Use `@Data` + `implements Serializable`
+- Copy field comments from DDL / Entity
+
+```java
+package {boPackage};
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * {tableComment}查询对象
+ *
+ * @author {author}
+ * @date {date}
+ */
+@Data
+public class {Prefix}QueryBO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * {columnComment}
+     */
+    private String {fieldName};
+
+    // ... one field per queryable column
+}
+```
+
+> 查询条件统一使用 `{Prefix}QueryBO`，不再生成独立的 SelectDTO。分页查询由 Controller 的 `startPage()`（MyBatis-Plus 分页拦截器）生效，`baseQueryMethod` 返回 `List<Entity>` 即可，无需单独的分页查询对象。
+
+### 5. VO
 
 **Path**: `{module}/vo/{Prefix}VO.java`
 
@@ -209,6 +254,7 @@ import lombok.NoArgsConstructor;
  * {tableComment} 后端数据传输对象
  *
  * @author {author}
+ * @date {date}
  */
 @Data
 @AllArgsConstructor
@@ -225,14 +271,20 @@ public class {Prefix}VO {
 }
 ```
 
-### 5. Converter
+### 6. Converter
 
-**Path**: `{module}/convert/{Prefix}Convert.java`
+**Path**: `{module}/convert/{Prefix}Convert.java`（Style A 工厂风格）或 `{module}/converter/{Prefix}Converter.java`（Style B Spring 风格）
+
+**Converter 风格跟随检测到的项目 MapStruct 约定动态生成**（与 `mapstruct-converter-gen` 一致）：
+- **Style A 工厂风格**：`@Mapper`（无 componentModel）+ `INSTANCE = Mappers.getMapper(...)` —— 默认
+- **Style B Spring 风格**：`@Mapper(componentModel = "spring")`，无 INSTANCE，注入使用
+
+#### Style A（工厂风格，默认）
 
 ```java
 package {basePackage}.{module}.convert;
 
-import {basePackage}.{module}.dto.{Prefix}SaveDTO;
+import {basePackage}.{module}.dto.{Prefix}{DtoSuffix};
 import {basePackage}.{module}.po.{Prefix};
 import {basePackage}.{module}.vo.{Prefix}VO;
 import org.mapstruct.Mapper;
@@ -244,6 +296,7 @@ import java.util.List;
  * {tableComment} 映射转换类
  *
  * @author {author}
+ * @date {date}
  */
 @Mapper
 public interface {Prefix}Convert {
@@ -258,32 +311,77 @@ public interface {Prefix}Convert {
     /**
      * dto转po
      */
-    {Prefix} dtoToPo({Prefix}SaveDTO dto);
+    {Prefix} dtoToPo({Prefix}{DtoSuffix} dto);
 
     /**
      * 批量dto转po
      */
-    List<{Prefix}> dtoListToPoList(List<{Prefix}SaveDTO> dtoList);
+    List<{Prefix}> dtoListToPoList(List<{Prefix}{DtoSuffix}> dtoList);
 }
 ```
 
-### 6. Service
+#### Style B（Spring componentModel 风格）
 
-**Path**: `{module}/service/{Prefix}Service.java`
+```java
+package {basePackage}.{module}.converter;
 
-**Core query method pattern** (conditionally chained QueryWrapper):
+import {basePackage}.{module}.dto.{Prefix}{DtoSuffix};
+import {basePackage}.{module}.po.{Prefix};
+import {basePackage}.{module}.vo.{Prefix}VO;
+import org.mapstruct.Mapper;
+
+import java.util.List;
+
+/**
+ * {tableComment} 映射转换类
+ *
+ * @author {author}
+ * @date {date}
+ */
+@Mapper(componentModel = "spring")
+public interface {Prefix}Converter {
+
+    /**
+     * poList转voList
+     */
+    List<{Prefix}VO> poToVoList(List<{Prefix}> list);
+
+    /**
+     * dto转po
+     */
+    {Prefix} dtoToPo({Prefix}{DtoSuffix} dto);
+
+    /**
+     * 批量dto转po
+     */
+    List<{Prefix}> dtoListToPoList(List<{Prefix}{DtoSuffix}> dtoList);
+}
+```
+
+> Domain 中使用 `{Prefix}Convert.INSTANCE.xxx()` 的调用仅在 Style A 下有效；Style B 下应在 Domain 中 `@Resource` 注入 `{Prefix}Converter` 后调用实例方法（两者方法名一致）。
+
+### 7. Service
+
+**Path**: `{module}/service/{Prefix}Service.java`（若项目使用接口风格则为 `I{Prefix}Service` + `{Prefix}ServiceImpl`）
+
+**查询方法统一遵循 ddl-to-service 的 `baseQueryMethod` 约定**: 使用独立 `QueryBO` 承载查询条件 + `LambdaQueryWrapper` 条件链（conditional chaining）。固定条件（如 `STATUS` / `HOSPITAL_ID`）遵循 baseQueryMethod 约定以**注释模板**形式给出，由用户按需启用，**不强制**。
+
+**Service 接口风格（按项目习惯决定）**: 若检测到项目使用 `I{Prefix}Service` 接口 + `{Prefix}ServiceImpl` 实现类，则按接口风格生成；否则生成直接类 `{Prefix}Service`（继承 `ServiceImpl`）。方法集不变。
+
+#### 直接类风格（默认，无接口）
 
 ```java
 package {basePackage}.{module}.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import {commonPackage}.core.exception.ServiceException;
 import {commonPackage}.datasource.enums.StatusEnum;
 import {commonPackage}.satoken.common.Common;
+import {boPackage}.{Prefix}QueryBO;
 import {basePackage}.{module}.mapper.{Prefix}Mapper;
 import {basePackage}.{module}.po.{Prefix};
 import org.springframework.stereotype.Service;
@@ -295,26 +393,29 @@ import java.util.List;
  * {tableComment} Service 层
  *
  * @author {author}
+ * @date {date}
  */
 @Service("{beanName}")
 public class {Prefix}Service extends ServiceImpl<{Prefix}Mapper, {Prefix}> {
 
     /**
-     * 获取列表
+     * 基础查询（baseQueryMethod 约定，源自 ddl-to-service）
      */
-    public List<{Prefix}> get{Prefix}List({Prefix} {prefix}) {
-        QueryWrapper<{Prefix}> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("STATUS", "0");
-        queryWrapper.eq("HOSPITAL_ID", Common.getHospitalId());
-        // Conditional query chain
-        if ({prefix}.get{Field}() != null) {
-            queryWrapper.eq("{FIELD_NAME}", {prefix}.get{Field}());
-        }
-        if (StrUtil.isNotEmpty({prefix}.get{FieldName}())) {
-            queryWrapper.like("{FIELD_NAME}", {prefix}.get{FieldName}());
-        }
-        // ... other fields
-        return this.baseMapper.selectList(queryWrapper);
+    public List<{Prefix}> baseQueryMethod({Prefix}QueryBO queryBO) {
+        LambdaQueryWrapper<{Prefix}> queryWrapper = new LambdaQueryWrapper<{Prefix}>()
+                // 固定条件（遵循 baseQueryMethod 约定，按需启用）
+                // .eq({Prefix}::getStatus, StatusEnum.IN_USE)
+                // .eq({Prefix}::getHospitalId, Common.getHospitalId())
+                // --- 查询条件（conditional chaining）---
+                .eq(StrUtil.isNotBlank(queryBO.get{FieldName}()), {Prefix}::get{FieldName}, queryBO.get{FieldName}())
+                // ... one condition per queryable field
+                // String 模糊查询: .like(StrUtil.isNotBlank(queryBO.get{Field}()), {Prefix}::get{Field}, queryBO.get{Field}())
+                // 非 String 字段: .eq(queryBO.get{Field}() != null, {Prefix}::get{Field}, queryBO.get{Field}())
+                // 集合字段: .in(CollUtil.isNotEmpty(queryBO.get{Field}()), {Prefix}::get{Field}, queryBO.get{Field}())
+                // 范围: .le/.ge/.between(queryBO.get{Field}() != null, {Prefix}::get{Field}, ...)
+                // 排序: .orderByAsc({Prefix}::getShowOrder)
+                ;
+        return this.list(queryWrapper);
     }
 
     /**
@@ -355,9 +456,10 @@ public class {Prefix}Service extends ServiceImpl<{Prefix}Mapper, {Prefix}> {
      * 按编码查询
      */
     public {Prefix} getByCode(Long {pkName}) {
-        QueryWrapper<{Prefix}> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("{PK_NAME}", {pkName})
-                   .eq("HOSPITAL_ID", Common.getHospitalId());
+        LambdaQueryWrapper<{Prefix}> queryWrapper = new LambdaQueryWrapper<{Prefix}>()
+                .eq({Prefix}::get{pkName}, {pkName});
+                // 固定条件（按需启用）
+                // .eq({Prefix}::getHospitalId, Common.getHospitalId())
         return this.baseMapper.selectOne(queryWrapper);
     }
 
@@ -366,11 +468,12 @@ public class {Prefix}Service extends ServiceImpl<{Prefix}Mapper, {Prefix}> {
      */
     public List<{Prefix}> getListByCodes(List<Long> codes) {
         if (CollUtil.isNotEmpty(codes)) {
-            QueryWrapper<{Prefix}> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("{PK_NAME}", codes)
-                       .eq("STATUS", "0")
-                       .eq("HOSPITAL_ID", Common.getHospitalId())
-                       .orderByAsc("SHOW_ORDER");
+            LambdaQueryWrapper<{Prefix}> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in({Prefix}::get{pkName}, codes)
+                    // 固定条件（按需启用）
+                    // .eq({Prefix}::getStatus, StatusEnum.IN_USE)
+                    // .eq({Prefix}::getHospitalId, Common.getHospitalId())
+                    .orderByAsc({Prefix}::getShowOrder);
             return this.baseMapper.selectList(queryWrapper);
         }
         return new ArrayList<>();
@@ -378,16 +481,66 @@ public class {Prefix}Service extends ServiceImpl<{Prefix}Mapper, {Prefix}> {
 }
 ```
 
-### 7. Domain (聚合根)
+#### 接口风格（项目使用 `I{Prefix}Service` 接口时）
+
+**接口 Path**: `{module}/service/I{Prefix}Service.java`
+
+```java
+package {basePackage}.{module}.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import {boPackage}.{Prefix}QueryBO;
+import {basePackage}.{module}.po.{Prefix};
+
+import java.util.List;
+
+/**
+ * {tableComment} Service 接口
+ *
+ * @author {author}
+ * @date {date}
+ */
+public interface I{Prefix}Service extends IService<{Prefix}> {
+
+    /**
+     * 基础查询
+     */
+    List<{Prefix}> baseQueryMethod({Prefix}QueryBO queryBO);
+
+    int insert({Prefix} {prefix});
+
+    int update({Prefix} {prefix});
+
+    int updateToDelete(Long {pkName});
+
+    {Prefix} getByCode(Long {pkName});
+
+    List<{Prefix}> getListByCodes(List<Long> codes);
+}
+```
+
+**实现类 Path**: `{module}/service/impl/{Prefix}ServiceImpl.java` — 与直接类风格方法体一致，类声明改为：
+
+```java
+@Service("{beanName}")
+public class {Prefix}ServiceImpl extends ServiceImpl<{Prefix}Mapper, {Prefix}> implements I{Prefix}Service {
+    // 方法体与直接类风格一致，并加 @Override
+}
+```
+
+### 8. Domain (聚合根)
 
 **Path**: `{module}/service/domain/Sys{Prefix}Domain.java`
+
+注入的 Service 类型跟随检测到的 Service 风格：直接类为 `{Prefix}Service`，接口风格为 `I{Prefix}Service`。
 
 ```java
 package {basePackage}.{module}.service.domain;
 
 import cn.hutool.core.collection.CollUtil;
+import {boPackage}.{Prefix}QueryBO;
 import {basePackage}.{module}.convert.{Prefix}Convert;
-import {basePackage}.{module}.dto.{Prefix}SaveDTO;
+import {basePackage}.{module}.dto.{Prefix}{DtoSuffix};
 import {basePackage}.{module}.po.{Prefix};
 import {basePackage}.{module}.service.{Prefix}Service;
 import {basePackage}.{module}.vo.{Prefix}VO;
@@ -402,6 +555,7 @@ import java.util.List;
  * {tableComment} 聚合根 - 业务编排层
  *
  * @author {author}
+ * @date {date}
  */
 @Component
 public class Sys{Prefix}Domain {
@@ -409,12 +563,16 @@ public class Sys{Prefix}Domain {
     @Resource
     private {Prefix}Service {prefix}Service;
 
+    // Style B 时改为 @Resource 注入 Converter，并去掉 INSTANCE：
+    // @Resource
+    // private {Prefix}Converter {prefix}Converter;
+
     /**
-     * 分页查询
+     * 分页查询（委托给 baseQueryMethod）
      */
-    public HashMap<String, Object> get{Prefix}List({Prefix} query) {
-        List<{Prefix}> list = {prefix}Service.get{Prefix}List(query);
-        List<{Prefix}VO> voList = {Prefix}Convert.INSTANCE.poToVoList(list);
+    public HashMap<String, Object> get{Prefix}List({Prefix}QueryBO queryBO) {
+        List<{Prefix}> list = {prefix}Service.baseQueryMethod(queryBO);
+        List<{Prefix}VO> voList = {Prefix}Convert.INSTANCE.poToVoList(list); // Style B: {prefix}Converter.poToVoList(list)
         HashMap<String, Object> result = new HashMap<>();
         result.put("count", list.size());
         result.put("vos", voList);
@@ -425,8 +583,8 @@ public class Sys{Prefix}Domain {
      * 新增
      */
     @Transactional(rollbackFor = Exception.class)
-    public int insert({Prefix}SaveDTO dto) {
-        {Prefix} entity = {Prefix}Convert.INSTANCE.dtoToPo(dto);
+    public int insert({Prefix}{DtoSuffix} dto) {
+        {Prefix} entity = {Prefix}Convert.INSTANCE.dtoToPo(dto); // Style B: {prefix}Converter.dtoToPo(dto)
         return {prefix}Service.insert(entity);
     }
 
@@ -434,8 +592,8 @@ public class Sys{Prefix}Domain {
      * 更新
      */
     @Transactional(rollbackFor = Exception.class)
-    public int update({Prefix}SaveDTO dto) {
-        {Prefix} entity = {Prefix}Convert.INSTANCE.dtoToPo(dto);
+    public int update({Prefix}{DtoSuffix} dto) {
+        {Prefix} entity = {Prefix}Convert.INSTANCE.dtoToPo(dto); // Style B: {prefix}Converter.dtoToPo(dto)
         return {prefix}Service.update(entity);
     }
 
@@ -468,9 +626,11 @@ public class Sys{Prefix}Domain {
 }
 ```
 
-### 8. Controller
+### 9. Controller
 
 **Path**: `{module}/controller/{Prefix}Controller.java`
+
+注入的 Service 类型跟随检测到的 Service 风格（`{Prefix}Service` 或 `I{Prefix}Service`）。`@RequestMapping` 使用 `/` 前导斜杠。
 
 ```java
 package {basePackage}.{module}.controller;
@@ -478,8 +638,8 @@ package {basePackage}.{module}.controller;
 import {commonPackage}.core.domain.AjaxResult;
 import {commonPackage}.core.domain.TableDataInfo;
 import {commonPackage}.datasource.base.BaseController;
-import {basePackage}.{module}.dto.{Prefix}SaveDTO;
-import {basePackage}.{module}.dto.{Prefix}SelectDTO;
+import {boPackage}.{Prefix}QueryBO;
+import {basePackage}.{module}.dto.{Prefix}{DtoSuffix};
 import {basePackage}.{module}.po.{Prefix};
 import {basePackage}.{module}.service.{Prefix}Service;
 import {basePackage}.{module}.service.domain.Sys{Prefix}Domain;
@@ -495,10 +655,11 @@ import java.util.List;
  * {tableComment} 管理
  *
  * @author {author}
+ * @date {date}
  */
 @Slf4j
 @RestController
-@RequestMapping("{mappingPath}")
+@RequestMapping("/{mappingPath}")
 public class {Prefix}Controller extends BaseController {
 
     @Resource
@@ -508,25 +669,25 @@ public class {Prefix}Controller extends BaseController {
     private Sys{Prefix}Domain sys{Prefix}Domain;
 
     /**
-     * 分页查询
+     * 分页查询（查询条件使用 QueryBO）
      */
     @GetMapping("/get{Prefix}PageList")
-    public AjaxResult get{Prefix}PageList({Prefix}SelectDTO dto) {
-        log.info("{module}/get{Prefix}PageList :: {}", dto);
-        startPage();
-        HashMap<String, Object> data = sys{Prefix}Domain.get{Prefix}List(dto);
-        TableDataInfo dataTable = getDataTable((List<?>) data.get("count"));
+    public AjaxResult get{Prefix}PageList({Prefix}QueryBO queryBO) {
+        log.info("{module}/get{Prefix}PageList :: {}", queryBO);
+        this.startPage();
+        HashMap<String, Object> data = sys{Prefix}Domain.get{Prefix}List(queryBO);
+        TableDataInfo dataTable = this.getDataTable((List<?>) data.get("count"));
         dataTable.setRows((List<?>) data.get("vos"));
         return AjaxResult.success(dataTable);
     }
 
     /**
-     * 全量查询
+     * 全量查询（查询条件使用 QueryBO）
      */
     @GetMapping("/get{Prefix}List")
-    public AjaxResult get{Prefix}List({Prefix}SelectDTO dto) {
-        log.info("{module}/get{Prefix}List :: {}", dto);
-        HashMap<String, Object> data = sys{Prefix}Domain.get{Prefix}List(dto);
+    public AjaxResult get{Prefix}List({Prefix}QueryBO queryBO) {
+        log.info("{module}/get{Prefix}List :: {}", queryBO);
+        HashMap<String, Object> data = sys{Prefix}Domain.get{Prefix}List(queryBO);
         return AjaxResult.success(data.get("vos"));
     }
 
@@ -534,7 +695,7 @@ public class {Prefix}Controller extends BaseController {
      * 新增
      */
     @PostMapping("/add{Prefix}")
-    public AjaxResult add{Prefix}(@RequestBody @Validated {Prefix}SaveDTO dto) {
+    public AjaxResult add{Prefix}(@RequestBody @Validated {Prefix}{DtoSuffix} dto) {
         log.info("{module}/add{Prefix} :: {}", dto);
         int i = sys{Prefix}Domain.insert(dto);
         return i > 0 ? AjaxResult.success("添加成功") : AjaxResult.error("添加失败");
@@ -544,7 +705,7 @@ public class {Prefix}Controller extends BaseController {
      * 更新
      */
     @PutMapping("/{Prefix}Update")
-    public AjaxResult {prefix}Update(@RequestBody {Prefix}SaveDTO dto) {
+    public AjaxResult {prefix}Update(@RequestBody {Prefix}{DtoSuffix} dto) {
         log.info("{module}/{prefix}Update :: {}", dto);
         int i = sys{Prefix}Domain.update(dto);
         return i > 0 ? AjaxResult.success("更新成功") : AjaxResult.error("更新失败");
@@ -582,32 +743,6 @@ public class {Prefix}Controller extends BaseController {
 }
 ```
 
-## Query Select DTO (额外生成)
-
-**Path**: `{module}/dto/{Prefix}SelectDTO.java`
-
-**用于分页查询条件**，所有字段为查询用：
-
-```java
-package {basePackage}.{module}.dto;
-
-import lombok.Data;
-import java.io.Serializable;
-
-/**
- * {tableComment} 查询条件
- */
-@Data
-public class {Prefix}SelectDTO implements Serializable {
-    private Long {pkName};
-    private String {fieldName};
-    // 用于 like 查询的字段
-    private String {searchField};
-    // 用于精确匹配的字段
-    private Long {exactField};
-}
-```
-
 ## Naming Conventions
 
 | Element | Rule | Example |
@@ -615,11 +750,11 @@ public class {Prefix}SelectDTO implements Serializable {
 | Entity class | `{Prefix}` | `SeStation` |
 | Entity file | `{Prefix}.java` | `SeStation.java` |
 | Mapper | `{Prefix}Mapper` | `StationMapper` |
-| DTO | `{Prefix}SaveDTO` | `StationSaveDTO` |
-| Select DTO | `{Prefix}SelectDTO` | `StationSelectDTO` |
+| DTO | `{Prefix}{DtoSuffix}`（`SaveDTO` 或 `DTO`，按项目习惯） | `StationSaveDTO` |
+| QueryBO | `{Prefix}QueryBO` | `StationQueryBO` |
 | VO | `{Prefix}VO` | `StationVO` |
-| Converter | `{Prefix}Convert` | `StationConvert` |
-| Service | `{Prefix}Service` (bean: `{lowerPrefix}Service`) | `StationService` ("seStationService") |
+| Converter | `{Prefix}Convert`（Style A）或 `{Prefix}Converter`（Style B） | `StationConvert` / `StationConverter` |
+| Service | `{Prefix}Service`（直接类）或 `I{Prefix}Service` + `{Prefix}ServiceImpl`（接口风格，按项目习惯） | `StationService` / `IStationService` |
 | Domain | `Sys{Prefix}Domain` | `SysStationDomain` |
 | Controller | `{Prefix}Controller` | `StationController` |
 | Table | `UPPER_SNAKE_CASE` | `SE_STATION` |
@@ -628,25 +763,27 @@ public class {Prefix}SelectDTO implements Serializable {
 
 ## Common Patterns Generated
 
-### Fixed conditions (always included)
-- `queryWrapper.eq("STATUS", "0")` — status filter
-- `queryWrapper.eq("HOSPITAL_ID", Common.getHospitalId())` — multi-tenant
+### Fixed conditions (optional template, per baseQueryMethod convention)
+- `.eq({Prefix}::getStatus, StatusEnum.IN_USE)` — status filter (logical delete)
+- `.eq({Prefix}::getHospitalId, Common.getHospitalId())` — multi-tenant
+- 按需启用：默认作为注释模板给出，用户确认后启用
 - `@TableField(fill = FieldFill.INSERT)` for `createBy`, `createTime`
 - `@TableField(fill = FieldFill.INSERT_UPDATE)` for `updateBy`, `updateTime`
 - `StatusEnum.IN_USE` / `StatusEnum.DELETED` for status transitions
 
-### Query wrapper conditional chain
-- `Long` / `Integer` fields → `.eq(field != null, "COL", field)`
-- `String` fields → `.like(StrUtil.isNotEmpty(field), "COL", field)`
-- `List` fields → `.in(CollUtil.isNotEmpty(list), "COL", list)`
-- Always ends with `.orderByAsc("SHOW_ORDER")` if showOrder exists
+### LambdaQueryWrapper conditional chain (baseQueryMethod, from ddl-to-service)
+- `Long` / `Integer` fields → `.eq(queryBO.get{Field}() != null, {Prefix}::get{Field}, queryBO.get{Field}())`
+- `String` fields → `.eq(StrUtil.isNotBlank(queryBO.get{Field}()), {Prefix}::get{Field}, queryBO.get{Field}())` (exact) or `.like(...)` (fuzzy)
+- `List` fields → `.in(CollUtil.isNotEmpty(queryBO.get{Field}()), {Prefix}::get{Field}, queryBO.get{Field}())`
+- Range → `.le/.ge/.between(queryBO.get{Field}() != null, ...)`
+- Always ends with `.orderByAsc({Prefix}::getShowOrder)` if showOrder exists
 
 ### CRUD methods always generated
-1. `getList({entity})` — conditional query with fixed filters
+1. `baseQueryMethod({QueryBO})` — conditional query (fixed conditions optional)
 2. `insert({entity})` — set status + insert
 3. `update({entity})` — check existence + update
 4. `updateToDelete(id)` — logical delete (set DELETED status)
-5. `getByCode(id)` — single by PK + tenant filter
+5. `getByCode(id)` — single by PK (fixed conditions optional)
 6. `getListByCodes(List<Long>)` — batch query with order
 
 ### Controller endpoints always generated
@@ -666,7 +803,7 @@ public class {Prefix}SelectDTO implements Serializable {
 4. **Present Plan** — show:
    - Detected project style
    - Package structure
-   - List of 8 files to generate
+   - List of 9 files to generate (8 + Controller)
    - Field mapping (DDL column → Java field)
    - Query strategy per field
 5. **Get Confirmation** — user approves or adjusts
@@ -676,12 +813,13 @@ public class {Prefix}SelectDTO implements Serializable {
 ## Important Constraints
 
 1. **NEVER skip the Domain layer** — it MUST be generated as aggregation root
-2. **NEVER skip SelectDTO** — separate query DTO is required for list/search
-3. **ALWAYS extend BaseController** — controller must extend detected base class
-4. **ALWAYS include `hospitalId` filter** — multi-tenant is mandatory
-5. **ALWAYS include `STATUS = 0` filter** — soft-delete filtering is mandatory
+2. **NEVER skip QueryBO** — the `{Prefix}QueryBO` query object (per ddl-to-service `baseQueryMethod` convention) is required for all query paths
+3. **ALWAYS use `baseQueryMethod` for queries** — list queries must go through `baseQueryMethod({Prefix}QueryBO)`, never direct PO or string-column QueryWrapper
+4. **ALWAYS extend BaseController** — controller must extend detected base class
+5. **固定条件遵循 baseQueryMethod 约定** — `hospitalId` / `STATUS` 等固定条件以注释模板给出，按需启用，不强制（检测到项目确有该约定时可默认启用并询问用户）
 6. **NEVER skip `@Transactional`** — Domain write methods must have `rollbackFor = Exception.class`
 7. **NEVER skip the Converter** — MapStruct is the standard mapping mechanism
 8. **Service bean name must match** — `@Service("{beanName}")` with convention
-9. **Ask user to confirm before generating** — never auto-generate blindly
-10. **When DDL-only mode, show Entity draft first** — get user approval on Entity before proceeding
+9. **内部函数调用使用 `this.xxx()` 风格** — 调用当前类自身的方法（如 `this.getByCode()`、`this.list()`、`this.baseMapper.xxx()`）必须带 `this.` 前缀，不使用裸调用
+10. **Ask user to confirm before generating** — never auto-generate blindly
+11. **When DDL-only mode, show Entity draft first** — get user approval on Entity before proceeding

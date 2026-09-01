@@ -34,5 +34,13 @@ See `skills/external/manifest.json` for the full index with descriptions.
 - Generated code follows Ruoyi + MyBatis-Plus conventions
 - ServiceImpl extends `ServiceImpl<Mapper, Entity>`
 - Controller extends `BaseController`
-- QueryBO lives in `domain.{module}.bo`
+- QueryBO package: ddl-to-service 默认 `domain.{module}.bo`；java-crud-stack-gen 默认 `{basePackage}.{module}.bo`（`{module}/bo/`），但**非固定**——结合项目现有 BO 结构与查询场景动态匹配（`{boPackage}`），检测后向用户确认
 - baseQueryMethod uses LambdaQueryWrapper with conditional chaining
+- All query paths in generated code use the `baseQueryMethod` convention (ddl-to-service): standalone `{Prefix}QueryBO` + `LambdaQueryWrapper` conditional chaining; java-crud-stack-gen queries follow the same convention
+- Fixed conditions (`hospitalId` / `STATUS`) are optional comment templates per baseQueryMethod convention — not mandatory
+- Internal method calls in generated classes use `this.xxx()` style (no bare calls)
+- "Domain" in ddl-to-service 指 **Java Bean**（持久化实体/POJO），不是聚合根
+- DTO 命名 `{Prefix}{DtoSuffix}`：`SaveDTO` 或 `DTO`，按项目习惯
+- Service 风格按项目习惯：直接类 `{Prefix}Service`，或 `I{Prefix}Service` 接口 + `{Prefix}ServiceImpl`
+- Converter 按项目 MapStruct 约定生成 Style A（factory + INSTANCE）或 Style B（`componentModel = "spring"`）
+- javadoc 统一 `@author {author}` + `@date {date}`

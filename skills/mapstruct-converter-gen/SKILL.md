@@ -99,6 +99,8 @@ User provides Entity + specific target (e.g., "generate VO only"). Generate only
 
 ## Generated Files
 
+所有生成类的 javadoc 统一使用 `@author {author}` + `@date {date}` 标签（与 ddl-to-service / java-crud-stack-gen 一致）。
+
 ### 1. Converter Interface
 
 **Style A path**: `{module}/convert/{Prefix}Convert.java`
@@ -125,7 +127,7 @@ User provides Entity + specific target (e.g., "generate VO only"). Generate only
 - Include all Entity fields except audit (createTime, updateTime, createBy, updateBy, deleted)
 - Add `@NotBlank` / `@NotNull` validation annotations based on nullable/required
 - Copy field comments from Entity
-- For Style B, also generate `{Prefix}Qo.java` (query object, all fields as String for flexible querying)
+- For Style B, also generate `{Prefix}Qo.java` (query object; 类型约定同 QueryBO — 仅 varchar 字段为 String，数值/日期保留原类型)
 
 ### 3. VO Class
 
@@ -143,7 +145,7 @@ User provides Entity + specific target (e.g., "generate VO only"). Generate only
 **Path**: `{module}/qo/{Prefix}Qo.java`
 
 **Rules:**
-- All fields as `String` type for flexible conditional querying
+- 字段类型遵循与 ddl-to-service `QueryBO` / java-crud-stack-gen `QueryBO` 一致的类型约定：varchar / `String` 字段为 `String`，数值（`Long` / `Integer` / `BigDecimal`）与日期字段**保留原类型**（支持范围/精确条件查询），不强制全部转 String
 - Include business-meaningful fields only (skip id, audit fields)
 - Use `@Data` + `implements Serializable`
 
@@ -231,8 +233,8 @@ import java.util.List;
 /**
  * 考站映射转换类
  *
- * @author NaCl
- * @since 2023/4/16
+ * @author {author}
+ * @date {date}
  */
 @Mapper
 public interface StationConvert {
