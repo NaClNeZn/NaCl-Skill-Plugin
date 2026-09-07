@@ -1,14 +1,14 @@
 {
   "version": "1.0.0",
   "description": "External skills manifest - bundled from third-party sources for standalone management",
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-07",
   "sources": {
     "superpowers": {
       "name": "Superpowers",
       "repo": "https://github.com/obra/superpowers",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-01",
+      "bundledAt": "2026-09-07",
       "skills": [
         {
           "id": "brainstorming",
@@ -101,7 +101,7 @@
       "repo": "https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-01",
+      "bundledAt": "2026-09-07",
       "skills": [
         {
           "id": "advanced-evaluation",
@@ -242,7 +242,7 @@
       "repo": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
       "branch": "master",
       "license": "MIT",
-      "bundledAt": "2026-09-01",
+      "bundledAt": "2026-09-07",
       "skills": [
         {
           "id": "brainstorm",
