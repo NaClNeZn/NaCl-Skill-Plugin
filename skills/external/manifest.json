@@ -1,20 +1,26 @@
 {
   "version": "1.0.0",
   "description": "External skills manifest - bundled from third-party sources for standalone management",
-  "updatedAt": "2026-09-14",
+  "updatedAt": "2026-09-21",
   "sources": {
     "superpowers": {
       "name": "Superpowers",
       "repo": "https://github.com/obra/superpowers",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-14",
+      "bundledAt": "2026-09-21",
       "skills": [
         {
           "id": "brainstorming",
           "path": "superpowers/brainstorming",
           "name": "brainstorming",
           "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+        },
+        {
+          "id": "diagnosing-superpowers",
+          "path": "superpowers/diagnosing-superpowers",
+          "name": "diagnosing-superpowers",
+          "description": "Use when a superpowers session went wrong and your human partner wants to know why — repeated work, ignored plans, stumbles, poor results, a skill that didn't fire, \"it took too long\", \"why is it so expensive\", \"what is it doing\" — or wants to build a bug report for the superpowers maintainers, for the current session or a past one identified by id or path, on any harness."
         },
         {
           "id": "dispatching-parallel-agents",
@@ -26,7 +32,7 @@
           "id": "executing-plans",
           "path": "superpowers/executing-plans",
           "name": "executing-plans",
-          "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints"
+          "description": "Use when executing an implementation plan in the current session as the implementer yourself — your human partner chose inline execution, or no subagent tool is available"
         },
         {
           "id": "finishing-a-development-branch",
@@ -101,7 +107,7 @@
       "repo": "https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-14",
+      "bundledAt": "2026-09-21",
       "skills": [
         {
           "id": "advanced-evaluation",
@@ -242,7 +248,7 @@
       "repo": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
       "branch": "master",
       "license": "MIT",
-      "bundledAt": "2026-09-14",
+      "bundledAt": "2026-09-21",
       "skills": [
         {
           "id": "brainstorm",
