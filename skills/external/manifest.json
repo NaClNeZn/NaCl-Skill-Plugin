@@ -1,14 +1,14 @@
 {
   "version": "1.0.0",
   "description": "External skills manifest - bundled from third-party sources for standalone management",
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-10-05",
   "sources": {
     "superpowers": {
       "name": "Superpowers",
       "repo": "https://github.com/obra/superpowers",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-28",
+      "bundledAt": "2026-10-05",
       "skills": [
         {
           "id": "brainstorming",
@@ -107,7 +107,7 @@
       "repo": "https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering",
       "branch": "main",
       "license": "MIT",
-      "bundledAt": "2026-09-28",
+      "bundledAt": "2026-10-05",
       "skills": [
         {
           "id": "advanced-evaluation",
@@ -230,6 +230,12 @@
           "description": "This skill should be used when the harness, scaffold, workflow, or optimizer itself is the optimization target: recursive self-improvement (RSI) loops, meta-harnesses, self-improving harnesses that mine their own failures and propose bounded edits, evolutionary or population-based search over agent scaffolds, acceptance gates for self-modifying systems, and agentic context evolution where the mechanism that produces context is versioned and evolved. Route governance of a single autonomous loop (locked surfaces, durable logs, rollback, novelty gates, approval boundaries) to harness-engineering, measurement and quality-gate design to evaluation, judge design to advanced-evaluation, and remote sandbox infrastructure to hosted-agents."
         },
         {
+          "id": "self-managed-context",
+          "path": "agent-skills/self-managed-context",
+          "name": "self-managed-context",
+          "description": "This skill should be used when a model gets read-write control over its own live context window instead of a harness-scheduled compaction policy: the context exposed as an editable file the model rewrites with code tools, model-driven eviction and in-place updates, the harness invariants that keep self-editing safe (pinned prefix, edit gate, edit receipts, budget readouts, rollback on overflow), the prefix-cache cost of mid-context edits, and steering or training the model's own context-editing strategy. Route note content and fixed-threshold summarization to context-compression, cache-stable layout under harness control to context-optimization, file offloading to filesystem-context, and loop governance to self-improvement-loops."
+        },
+        {
           "id": "template",
           "path": "agent-skills/template",
           "name": "skill-template",
@@ -248,7 +254,7 @@
       "repo": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
       "branch": "master",
       "license": "MIT",
-      "bundledAt": "2026-09-28",
+      "bundledAt": "2026-10-05",
       "skills": [
         {
           "id": "brainstorm",
