@@ -139,10 +139,10 @@ def main():
         print(f"warning: could not fully clean {TMP_DIR}")
     print("External skills synced.")
 
-    # Refresh the DSH-friendly flat layout so it never goes stale after sync.
+    # Refresh the DSH-friendly flat layout at repo root so it never goes stale.
     build = ROOT / "scripts" / "build_dsh_layout.py"
     if build.exists():
-        print("Rebuilding DSH flat layout (dsh-skills/)...")
+        print("Rebuilding DSH flat layout at repo root...")
         run([sys.executable, str(build)])
 
 
