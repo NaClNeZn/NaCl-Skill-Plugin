@@ -139,6 +139,12 @@ def main():
         print(f"warning: could not fully clean {TMP_DIR}")
     print("External skills synced.")
 
+    # Refresh the DSH-friendly flat layout so it never goes stale after sync.
+    build = ROOT / "scripts" / "build_dsh_layout.py"
+    if build.exists():
+        print("Rebuilding DSH flat layout (dsh-skills/)...")
+        run([sys.executable, str(build)])
+
 
 if __name__ == "__main__":
     main()

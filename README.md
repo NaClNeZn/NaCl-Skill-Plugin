@@ -40,6 +40,11 @@ nacl-skill/
 │       └── superclaude/              # 6 SuperClaude skills
 ├── hooks/
 │   └── hooks.json                    # Session hooks
+├── scripts/
+│   ├── update_external_skills.py     # Sync bundled skills from upstream repos
+│   └── build_dsh_layout.py           # Flatten all skills to repo root for DSH
+├── .nacl-dsh-skills.json             # Manifest of script-generated root skill dirs
+├── {skill-name}/SKILL.md × 48        # Auto-generated flat layout for DSH (DeepSeek Harness)
 ├── package.json
 ├── AGENTS.md
 └── README.md
@@ -61,6 +66,24 @@ Copy this directory to your Kimi Code managed plugins folder, or reference it as
 1. Update manifest.json with new version info
 2. Replace the relevant `SKILL.md` files in `skills/external/{collection}/`
 3. Update `skillInstructions` in `plugin.json` if new skills are added
+4. Run `python scripts/build_dsh_layout.py` to refresh the root-level flat layout
+
+> Note: `python scripts/update_external_skills.py` runs the DSH layout rebuild
+> automatically at the end of every sync (including the weekly CI workflow).
+
+## DSH (DeepSeek Harness) Compatibility
+
+DSH's skill discovery only scans **direct children** of a skill root
+(`<root>/<id>/SKILL.md` or `<root>/<id>.md`). The Kimi Code layout
+`skills/external/{collection}/{skill}/SKILL.md` is nested too deep, so
+`scripts/build_dsh_layout.py` flattens every skill — native and external —
+into `{skill-name}/SKILL.md` **at the repo root** (48 dirs), normalizing the
+frontmatter to DSH rules (`name` = kebab-case dir name, description ≤500 chars
+on one line). Generated dirs are tracked in `.nacl-dsh-skills.json`; re-runs
+only touch script-created directories.
+
+Point DSH's GitHub repo import at this repo and all 48 skills are discovered.
+Kimi Code is unaffected: `plugin.json` still points at `./skills/`.
 
 ## License
 

@@ -9,3 +9,7 @@ codeup-project-analysis.json
 /skills/project-analysis-report.md
 
 .tmp-skill-sync/
+
+# generated DSH export (python scripts/export_dsh.py)
+.dsh/
+.workbuddy

@@ -8,6 +8,7 @@ Personal skills plugin for NaCl's engineering workflows.
 - `skills/using-naclskill/` — Session startup skill (always invoked first)
 - `skills/ddl-to-service/` — DDL → MyBatis-Plus service generator
 - `skills/external/` — Bundled third-party skills (Superpowers, Context Engineering, SuperClaude)
+- `{skill-name}/` × 48 at repo root — Auto-generated flat layout for DSH (DeepSeek Harness) GitHub import; rebuild via `scripts/build_dsh_layout.py` (also chained after `update_external_skills.py`); tracked by `.nacl-dsh-skills.json`; never hand-edit
 - `hooks/hooks.json` — Session hooks
 
 ## Bundled Skills
